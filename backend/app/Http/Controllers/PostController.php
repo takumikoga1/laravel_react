@@ -6,37 +6,50 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    // GET /api/posts - 一覧取得
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::orderBy('created_at', 'desc')->get();
+        $query = Post::query();
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('author')) {
+            $query->where('author', $request->author);
+        }
+
+        if ($request->has('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                  ->orWhere('content', 'like', "%{$request->search}%");
+            });
+        }
+
+        $posts = $query->orderBy('created_at', 'desc')->get();
         return PostResource::collection($posts);
     }
 
-    // POST /api/posts - 新規作成
     public function store(StorePostRequest $request)
     {
         $post = Post::create($request->validated());
         return new PostResource($post);
     }
 
-    // GET /api/posts/{post} - 詳細取得
     public function show(Post $post)
     {
         return new PostResource($post);
     }
 
-    // PUT /api/posts/{post} - 更新
     public function update(UpdatePostRequest $request, Post $post)
     {
         $post->update($request->validated());
         return new PostResource($post);
     }
 
-    // DELETE /api/posts/{post} - 削除
     public function destroy(Post $post)
     {
         $post->delete();
