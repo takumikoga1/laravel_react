@@ -1,34 +1,23 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import PostList from './pages/PostList';
-import PostDetail from './pages/PostDetail';
-import PostCreate from './pages/PostCreate';
-import PostEdit from './pages/PostEdit';
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import Login from './components/Login'; // 追加
 import './App.css';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div style={{ width: '100%', minHeight: '100vh' }}>
-        <nav style={{ 
-          padding: '20px', 
-          backgroundColor: '#333', 
-          color: 'white',
-          marginBottom: '20px',
-          width: '100%',
-          boxSizing: 'border-box'
-        }}>
-          <h2 style={{ margin: 0 }}>Laravel + React Blog System</h2>
-        </nav>
-
-        <Routes>
-          <Route path="/" element={<Navigate to="/posts" replace />} />
-          <Route path="/posts" element={<PostList />} />
-          <Route path="/posts/create" element={<PostCreate />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
-          <Route path="/posts/:id/edit" element={<PostEdit />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <h1>Laravel + React 学習プロジェクト</h1>
+          
+          <Routes>
+            <Route path="/" element={<div>ホーム</div>} />
+            <Route path="/login" element={<Login />} /> {/* 追加 */}
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
